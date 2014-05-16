@@ -22,12 +22,16 @@ for i=[grammar.symbols.detector_id]
 end
 
 % compute final factor tables
-factorTables = {};
+factorTables = struct;
 for i=1:length(grammar.symbols)
     if grammar.symbols(i).is_terminal
-        factorTables{i} = detections{grammar.symbols(i).detector_id} .* durations{i} ;
+        factorTables.s{i} = detections{grammar.symbols(i).detector_id} .* durations{i} ;
     end
 end
+
+% start and end prior
+factorTables.start_prior = ones(1, T);
+factorTables.end_prior   = ones(1, T);
 
 %% perform inference
 sin = sin_perform_inference(sin, factorTables);

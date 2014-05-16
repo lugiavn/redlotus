@@ -7,17 +7,19 @@ function sin = sin_perform_inference( sin, factorTables )
     
     % check factor Tables valid
     if sin.params.check_valid_data
-        for i=1:length(factorTables)
-            assert(sin_check_valid_data(factorTables{i}));
+        for i=1:length(factorTables.s)
+            assert(sin_check_valid_data(factorTables.s{i}));
         end
     end
     
     % perform forward phase, recursively from root
-    sin.nodes(root).forward_phase.the_start.v = [0 0 0 0 0 1 zeros(1, sin.params.T-6)];
+    sin.nodes(root).forward_phase.the_start.v   = factorTables.start_prior;
+    sin.nodes(root).forward_phase.the_start.exp = 0;
     sin = perform_forward(sin, factorTables, root);
     
     % perform backward phase, recursively from root
-    sin.nodes(root).backward_phase.the_end.v = [zeros(1, sin.params.T-6) 1 0 0 0 0 0];
+    sin.nodes(root).backward_phase.the_end.v   = factorTables.end_prior;
+    sin.nodes(root).backward_phase.the_end.exp = 0;
     sin = perform_backward(sin, factorTables, root);
     
     % compute the posterior
@@ -41,7 +43,7 @@ function sin = perform_forward(sin, factorTables, id)
     if s.is_terminal
         
         t   = n.forward_phase.the_start;
-        t.v = sum(repmat(t.v', [1 sin.params.T]) .* factorTables{s.original_symbol_id}, 1);
+        t.v = sum(repmat(t.v', [1 sin.params.T]) .* factorTables.s{s.original_symbol_id}, 1);
         t   = norm_t(t);
         
         n.forward_phase.the_end = t;
@@ -103,7 +105,7 @@ function sin = perform_backward(sin, factorTables, id)
     if s.is_terminal
         
         t = n.backward_phase.the_end;
-        t.v = sum(repmat(t.v, [sin.params.T 1]) .* factorTables{s.original_symbol_id}, 2)';
+        t.v = sum(repmat(t.v, [sin.params.T 1]) .* factorTables.s{s.original_symbol_id}, 2)';
         t   = norm_t(t);
         
         n.backward_phase.the_start = t;

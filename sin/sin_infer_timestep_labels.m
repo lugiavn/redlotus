@@ -16,7 +16,7 @@ for i = find([sin.compiled_grammar.symbols.is_terminal] == 1)
     end
     
     % compute the joint posterior of start and end
-    joint = repmat(n.forward_phase.the_start.v', [1 sin.params.T]) .* factorTables{j} .* repmat(n.backward_phase.the_end.v, [sin.params.T 1]) .* triu(ones(T));
+    joint = repmat(n.forward_phase.the_start.v', [1 sin.params.T]) .* factorTables.s{j} .* repmat(n.backward_phase.the_end.v, [sin.params.T 1]) .* triu(ones(T));
     joint = joint / sum(joint(:)) * s.happen_prob;
     
     if sin.params.check_valid_data, assert(sin_check_valid_data(joint)); end;
