@@ -1,0 +1,7 @@
+S > A and B and C
+A > a1@0.2 or a2@0.8
+C > A and A and A
+
+B 1 10         100
+a1 3 33  22
+a2 4 100 3
