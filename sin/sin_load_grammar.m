@@ -1,12 +1,11 @@
-
-
-
-function grammar = sin_load_grammar(file)
-
+function grammar = sin_load_grammar( file )
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
 
 grammar             = struct;
 grammar.starting    = 1;
 grammar.symbols     = struct([]);
+grammar.dummy_ids   = [];
 
 fid = fopen(file);
 assert(fid > 0);
@@ -16,169 +15,132 @@ while ~feof(fid)
     % read line
     s = fgetl(fid);
     if length(s) < 3, continue; end;
-%     disp(['read line:  ' s]);
+    s = strrep(s, '(', ' ( ');
+    s = strrep(s, ')', ' ) ');
     
-    % parse
-    %tokens = regexp(s, '\s', 'split');
-    %tokens = strread(s,'%s','delimiter',' ');
     tokens = textscan(s, '%s');
+    if length(tokens) < 1, continue; end;
     tokens = tokens{1};
+    if length(tokens) < 3, continue; end;
     
-    if strcmp(tokens{1}, '%')
-        continue;
-    end
     
-    % get left
-    left_id = [];
-    try
-        left_id = find(strcmp({grammar.symbols.name}, tokens{1}));
-    end;
-    if isempty(left_id)
-        
-        % ----- add new symbol
-        left_id = length(grammar.symbols) + 1;
-        
-        grammar.symbols(left_id).name                 = tokens{1};
-        grammar.symbols(left_id).detector_id          = nan;
-        grammar.symbols(left_id).params.duration_mean = nan;
-        grammar.symbols(left_id).params.duration_var  = nan;
-    end
-    grammar.symbols(left_id).is_terminal = 0;
+%     disp(tokens);
     
-    % check for terminal info line
-    if ~strcmp(tokens{2}, '>')
-        grammar.symbols(left_id).is_terminal = 1;
-        grammar.symbols(left_id).detector_id = str2num(tokens{2});
+    % left symbol
+    [grammar left_id] = get_id_from_symbol_name(grammar, tokens{1}); 
+    
+    % parse production rule
+    if strcmp(tokens{2}, '>')
         
-        if length(tokens) == 4
-            grammar.symbols(left_id).params.duration_mean = str2num(tokens{3});
-            grammar.symbols(left_id).params.duration_var  = str2num(tokens{4});
+        grammar.symbols(left_id).is_terminal = 0;
+        grammar = parse_expressions(grammar, left_id, tokens(3:end));
+    
+    % parse symbol params    
+    else
+        for i=2:2:length(tokens)
+            grammar.symbols(left_id).params.(tokens{i}) = str2num(tokens{i+1});
         end
-        
-        continue;
     end
     
-    % get right
-    right_ids   = [];
-    right_probs = [];
-    for k=3:2:length(tokens)
-        
-        or_prob = 1;
-        thename = tokens{k};
-        findat  = find(thename == '@');
-        if length(findat) == 1
-            or_prob = str2num(thename(findat+1:end));
-            thename = thename(1:findat-1);
-        end
-
-        rid = find(strcmp({grammar.symbols.name}, thename));
-        % ----- add new symbol
-        if isempty(rid)
-            rid = length(grammar.symbols) + 1;
-            
-            
-            grammar.symbols(rid).name                        = thename;
-            grammar.symbols(rid).is_terminal                 = 1;
-            grammar.symbols(rid).detector_id                 = nan;
-            grammar.symbols(rid).params.duration_mean  = nan;
-            grammar.symbols(rid).params.duration_var   = nan;
-        end
-        
-        right_ids(end+1) = rid;
-        right_probs(end+1) = or_prob;
-        
+    % create the name 2 id map
+    for i=1:length(grammar.symbols)
+        grammar.name2id.(grammar.symbols(i).name) = i;
     end
-    
-    % production rule
-    prule         = struct;
-    prule.left    = left_id;
-    prule.right   = right_ids;
-    prule.or_rule = 0;
-    prule.or_prob = nan;
-    
-    if length(tokens) >= 4 && strcmp(tokens{4}, 'or')
-        n = (length(tokens) - 1) / 2;
-        prule.or_rule = 1;
-        prule.or_prob = right_probs / sum(right_probs);
-    end
-    
-    grammar.symbols(left_id).prule = prule;
 end
-
 
 fclose(fid);
 
-%% more symbol info
-for i=1:length(grammar.symbols)
-%     if ~grammar.symbols(i).is_terminal
-%         grammar.symbols(i).prule = grammar.rules(grammar.symbols(i).rule_id);
-%     end
-    
-    grammar.name2id.(grammar.symbols(i).name) = i;
+
 end
 
+function [grammar id] = get_id_from_symbol_name(grammar, name)
 
-%% print grammar
-if 0
-    disp '------------ print grammar rules'
-    for i=1:length(grammar.rules)
+    if ~exist('name')
+        name = ['dummy' num2str(1+length(grammar.dummy_ids))];
+        [grammar id] = get_id_from_symbol_name(grammar, name);
+        grammar.dummy_ids(end+1) = id;
+        return;
+    end
 
-        r = '';
-        r = [r grammar.symbols(grammar.rules(i).left).name];
-        r = [r ' >>> '];
-
-        for j=grammar.rules(i).right
-            r = [r grammar.symbols(j).name];
-
-            if grammar.rules(i).or_rule
-                r = [r ' | '];
-            else
-                r = [r '  '];
-            end
-        end
-
-        disp(r);
+    id = [];
+    try
+        id = find(strcmp({grammar.symbols.name}, name));
+    end;
+    if isempty(id)
+        % ----- add new symbol
+        id                              = length(grammar.symbols) + 1;
+        grammar.symbols(id).name        = name;
+        grammar.symbols(id).is_terminal = 1;
+        grammar.symbols(id).params      = struct;
     end
 end
 
+function grammar = parse_expressions (grammar, left_id, tokens)
 
+    grammar.symbols(left_id).prule.or_rule  = 0;
+    grammar.symbols(left_id).prule.or_probs = [];
+    grammar.symbols(left_id).prule.right    = [];
+    
+
+    current_or_prob = 1;
+    get_symbol_name = 1;
+    i = 1;
+    
+    while i <= length(tokens)
+        
+        % or probability
+        if get_symbol_name & strcmp(tokens{i}(1), '{')
+            s = tokens{i};
+            s = strrep(s, '{', '');
+            s = strrep(s, '}', '');
+            current_or_prob = str2num(s);
+            get_symbol_name = ~get_symbol_name;
+            
+        % the operation 'and' or 'or'
+        elseif ~get_symbol_name
+            
+            if strcmp(tokens{i}, 'or')
+                grammar.symbols(left_id).prule.or_rule = 1;
+            end
+            
+        % get the symbol id and add to the rule
+        elseif get_symbol_name
+            
+            % get the id
+            if ~strcmp(tokens{i}, '(')
+                [grammar id] = get_id_from_symbol_name(grammar, tokens{i});
+            else
+                % parse the expression
+                start_i      = i;
+                find_closing = 0;
+                for end_i = i:length(tokens)
+                    if strcmp(tokens{end_i}, '('), find_closing = find_closing + 1; end;
+                    if strcmp(tokens{end_i}, ')'), find_closing = find_closing - 1; end;
+                    if find_closing == 0, break; end
+                end
+                [grammar id] = get_id_from_symbol_name(grammar); 
+                grammar.symbols(id).is_terminal = 0;
+                grammar      = parse_expressions (grammar, id, tokens(start_i+1:end_i-1));
+                i            = end_i;
+            end
+            
+            % add id to rule
+            grammar.symbols(left_id).prule.right(end+1)    = id;
+            grammar.symbols(left_id).prule.or_probs(end+1) = current_or_prob;
+        end
+        
+        % next
+        i = i + 1;
+        get_symbol_name = ~get_symbol_name;
+    end
+
+    % normalize or probs
+    if grammar.symbols(left_id).prule.or_rule
+        grammar.symbols(left_id).prule.or_probs = grammar.symbols(left_id).prule.or_probs / sum(grammar.symbols(left_id).prule.or_probs);
+    else
+        grammar.symbols(left_id).prule.or_probs = [];
+    end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,0 +1,17 @@
+body1             253            000
+body2             333           000
+body3             599            000
+body4             792             000 
+nose_ab1             1102             000 
+nose_ab2        1191             000 
+nose_ab3            1534           000 
+nose_ab4           1655            000 
+tail_b1           1905             000 
+tail_b2          2021             000 
+tail_b3            2118            000 
+tail_b4            2222            000 
+wing_b1          2528             000 
+wing_b2          2685             000 
+wing_b3          2765           000 
+wing_b4             3004             000 
+sticker            3291            3552

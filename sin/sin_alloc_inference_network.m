@@ -3,6 +3,7 @@ function n = sin_alloc_inference_network( compiled_grammar, T)
 %   Detailed explanation goes here
 
     n.compiled_grammar        = compiled_grammar;
+    n.original_grammar        = compiled_grammar.original_grammar;
     n.params.T                = T;
     n.params.check_valid_data = 1;
     n.nodes                   = struct([]);

@@ -1,0 +1,17 @@
+body1             52             000
+body2             121           000
+body3             313            000
+body4            481             000 
+wheel1             785             000 
+wheel2           932             000 
+nose_ab1                1269             000 
+nose_ab2           1402             000 
+nose_ab3            1913             000 
+nose_ab4             2031            000 
+wing_a1           2265             000 
+wing_a2             2374             000 
+wing_a3             2453             000 
+tail_a1            2798            000 
+tail_a2           2868             000 
+tail_a3              2945            000 
+sticker              3275             3509 

@@ -1,0 +1,8 @@
+
+S > ( {0.5} (a and b) or {0.2} (a and a and d and e) or {0.3} (a and a and (d or d) and e) ) and c
+
+a duration_mean 100 duration_var 100 detector_id 1
+b duration_mean 100 duration_var 100 detector_id 2
+c duration_mean 100 duration_var 100 detector_id 3
+d duration_mean 100 duration_var 100 detector_id 4
+e duration_mean 100 duration_var 100 detector_id 5

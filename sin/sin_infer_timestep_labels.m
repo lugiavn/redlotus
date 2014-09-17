@@ -19,6 +19,7 @@ for i = find([sin.compiled_grammar.symbols.is_terminal] == 1)
     joint = repmat(n.forward_phase.the_start.v', [1 sin.params.T]) .* factorTables.s{j} .* repmat(n.backward_phase.the_end.v, [sin.params.T 1]) .* triu(ones(T));
     joint = joint / sum(joint(:)) * s.happen_prob;
     
+    
     if sin.params.check_valid_data, assert(sin_check_valid_data(joint)); end;
     
 	integral_joint = cumsum(cumsum(joint(:,end:-1:1), 2));

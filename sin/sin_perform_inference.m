@@ -66,7 +66,7 @@ function sin = perform_forward(sin, factorTables, id)
         for i=s.prule.right
             j    = j + 1;
             t2   = sin.nodes(i).forward_phase.the_end;
-            t2.v = t2.v * s.prule.or_prob(j);
+            t2.v = t2.v * s.prule.or_probs(j);
             t    = x_sum(t, t2);
         end
         n.forward_phase.the_end = t;
@@ -128,7 +128,7 @@ function sin = perform_backward(sin, factorTables, id)
         for i=s.prule.right
             j    = j + 1;
             t2   = sin.nodes(i).backward_phase.the_start;
-            t2.v = t2.v * s.prule.or_prob(j);
+            t2.v = t2.v * s.prule.or_probs(j);
             t    = x_sum(t, t2);
         end
         n.backward_phase.the_start = t;
@@ -202,7 +202,7 @@ function sin = sin_compute_exist_prob(sin, id)
             exps(end+1)  = n2.forward_phase.the_end.exp;
         end
         
-        exps = exps + log(s.prule.or_prob);
+        exps = exps + log(s.prule.or_probs);
         exps = exps - max(exps);
         for i=1:length(probs)
             probs(i) = probs(i) * exp(exps(i));

@@ -1,0 +1,19 @@
+
+S > A and B and C
+A > a1 or a2
+B > b1 and b2
+C > {0.8} c1 or {0.2} c2
+
+a1 duration_mean 10 duration_var 10  detector_id 1
+a2 duration_mean 20 duration_var 20  detector_id 2
+b1 duration_mean 30 duration_var 30  detector_id 3
+b2 duration_mean 10 duration_var 10  detector_id 4
+c1 duration_mean 10 duration_var 100 detector_id 5
+c2 duration_mean 50 duration_var 10  detector_id 6
+
+
+
+
+
+
+

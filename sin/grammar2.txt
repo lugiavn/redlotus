@@ -1,9 +1,0 @@
-S > {1} A or {2} B
-SS > A and (X or (m and ( {0.2} n1 or {0.8} n2)) or (a and b)) and (n1 or n2) and b
-                 
-                  
-  
-S detector_id -1 starting 1
-n1 duration_mean 10     duration_var    12
-
-           

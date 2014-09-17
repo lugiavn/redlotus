@@ -19,7 +19,7 @@ function compiled_grammar = sin_compile_grammar( grammar )
         if length(x) < i, break; end;
         
         s = grammar.symbols(x(i));
-        r = prules([prules.left] == x(i));
+        r = s.prule;
         
         % new unique name
         s.name = [s.name '_' num2str(i)];

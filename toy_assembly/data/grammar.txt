@@ -1,0 +1,82 @@
+
+S	> Body and (Wheel or null) and NWT and sticker
+NWT	> {0.3} NWT_A or {0.3} NWT_B or {0.4} NWT_C
+NWT_A   > Nose_AB and ((Wing_A and Tail_A) or (Tail_A and Wing_A))
+NWT_B   > Nose_AB and ((Wing_B and Tail_B) or (Tail_B and Wing_B))
+NWT_C   > Nose_C and ((Wing_C and Tail_C) or (Tail_C and Wing_C))
+Body	> body1 and body2 and body3 and body4
+Wheel   > wheel1 and wheel2
+Nose_AB	> nose_ab1 and nose_ab2 and nose_ab3 and nose_ab4
+Nose_C	> nose_c1 and nose_c2 and nose_c3
+Wing_A	> wing_a1 and wing_a2 and wing_a3
+Wing_B	> wing_b1 and wing_b2 and wing_b3 and wing_b4
+Wing_C	> wing_c1 and wing_c2 and wing_c3 and wing_c4 and wing_c5 and wing_c6
+Tail_A	> tail_a1 and tail_a2 and tail_a3
+Tail_B  > tail_b1 and tail_b2 and tail_b3 and tail_b4
+Tail_C	> tail_c1 and tail_c2 and tail_c3 and tail_c4 and tail_c5 and tail_c6
+
+
+body1 		detector_id 5
+body2 		detector_id 5
+body3 		detector_id 3
+body4 		detector_id 4
+
+wheel1  	detector_id 3 
+wheel2  	detector_id 3
+
+nose_ab1 	detector_id 3
+nose_ab2	detector_id 4
+nose_ab3	detector_id 3
+nose_ab4	detector_id 3
+
+nose_c1		detector_id 3
+nose_c2		detector_id 4
+nose_c3		detector_id 3
+
+wing_a1		detector_id 3
+wing_a2		detector_id 1
+wing_a3		detector_id 4
+
+wing_b1		detector_id 3
+wing_b2		detector_id 1
+wing_b3		detector_id 1
+wing_b4		detector_id 4
+
+wing_c1		detector_id 3
+wing_c2		detector_id 2
+wing_c3		detector_id 2
+wing_c4		detector_id 1
+wing_c5		detector_id 1
+wing_c6		detector_id 2
+
+
+tail_a1		detector_id 3
+tail_a2		detector_id 5
+tail_a3		detector_id 4
+
+tail_b1		detector_id 3
+tail_b2		detector_id 5
+tail_b3		detector_id 5
+tail_b4		detector_id 4
+
+tail_c1		detector_id 3
+tail_c2		detector_id 2
+tail_c3		detector_id 2
+tail_c4		detector_id 5
+tail_c5		detector_id 5
+tail_c6		detector_id 2
+
+sticker     detector_id 2
+
+null        detector_id 6 duration_mean 0 duration_var 0
+
+
+
+
+
+
+
+
+
+
+
